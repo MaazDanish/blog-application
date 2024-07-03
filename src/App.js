@@ -1,23 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import BlogForm from './components/blogForm/BlogFrom';
+import BlogCard from './components/blogcard/BlogCard';
 
 function App() {
+  const [data, setData] = useState([])
+  const [currentBlog, setCurrentBlog] = useState(null)
+  const [editIndex, setEditIndex] = useState(null)
+
+  const fetchDataHandler = (data) => {
+    setData((prevdata) => {
+      return [data, ...prevdata];
+    })
+  }
+
+  const deleteBlogHandler = (index) => {
+    setData(data.filter((_, i) => i !== index));
+  }
+
+  const editBlogHandler = (index, blog) => {
+    setCurrentBlog(blog)
+    setEditIndex(index)
+  }
+
+  const updateBlog = (updatedBlog) => {
+    const updatedBlogs = data.map((data, i) => (i === editIndex ? updateBlog : data))
+    setData(updatedBlogs);
+    setCurrentBlog(null);
+    setEditIndex(null);
+
+  }
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h2>Blogs <span> {data.length} </span></h2>
+      <BlogForm onfetchData={fetchDataHandler}  currentBlog={currentBlog} updateBlog={updateBlog}></BlogForm>
+      <hr></hr>
+      <BlogCard blogsData={data} deleteBlog={deleteBlogHandler} editBlog={editBlogHandler}></BlogCard>
     </div>
   );
 }
